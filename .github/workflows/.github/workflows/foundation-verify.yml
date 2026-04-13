@@ -1,0 +1,30 @@
+name: Foundation Verify
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "README.md"
+      - "MANIFEST.md"
+      - "docs/github/**"
+      - "standards/bootstrap/**"
+      - "standards/codex/**"
+      - "baselines/nextjs-neon-node-minimal/**"
+      - "tools/verify-bootstrap.sh"
+
+permissions:
+  contents: read
+
+jobs:
+  foundation_verify:
+    name: foundation-verify
+    uses: ./.github/workflows/reusable-foundation-verify.yml
+    with:
+      target-path: baselines/nextjs-neon-node-minimal
+      node-version: "20"
+      pnpm-version: "10.28.2"
+      install-dependencies: true
+      require-lockfile: false
+      foundation-repo: ${{ github.repository }}
+      foundation-ref: ${{ github.sha }}

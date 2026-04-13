@@ -1,0 +1,105 @@
+name: Reusable Foundation Verify
+
+on:
+  workflow_call:
+    inputs:
+      target-path:
+        description: "Path inside the caller repository to verify."
+        required: false
+        type: string
+        default: "."
+      node-version:
+        description: "Pinned Node major/minor used for verification."
+        required: false
+        type: string
+        default: "20"
+      pnpm-version:
+        description: "Pinned pnpm version used for verification."
+        required: false
+        type: string
+        default: "10.28.2"
+      install-dependencies:
+        description: "Run pnpm install/typecheck/build after file-level verification."
+        required: false
+        type: boolean
+        default: true
+      require-lockfile:
+        description: "Fail if pnpm-lock.yaml is missing in the target path."
+        required: false
+        type: boolean
+        default: false
+      foundation-repo:
+        description: "Repository that contains this standard's scripts and docs."
+        required: false
+        type: string
+        default: "ANOSkdy/acoru-codex-standards"
+      foundation-ref:
+        description: "Ref used when checking out the foundation repo."
+        required: false
+        type: string
+        default: "main"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: foundation-verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          path: target
+
+      - name: Checkout foundation repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.foundation-repo }}
+          ref: ${{ inputs.foundation-ref }}
+          path: foundation
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ inputs.pnpm-version }}
+
+      - name: Verify bootstrap file set
+        shell: bash
+        run: |
+          chmod +x foundation/tools/verify-bootstrap.sh
+          foundation/tools/verify-bootstrap.sh "target/${{ inputs.target-path }}"
+
+      - name: Require lockfile when enabled
+        if: ${{ inputs.require-lockfile }}
+        shell: bash
+        run: |
+          test -f "target/${{ inputs.target-path }}/pnpm-lock.yaml"
+
+      - name: Install dependencies
+        if: ${{ inputs.install-dependencies }}
+        working-directory: target/${{ inputs.target-path }}
+        shell: bash
+        run: |
+          pnpm install --no-frozen-lockfile
+
+      - name: Typecheck
+        if: ${{ inputs.install-dependencies }}
+        working-directory: target/${{ inputs.target-path }}
+        shell: bash
+        run: |
+          pnpm typecheck
+
+      - name: Build
+        if: ${{ inputs.install-dependencies }}
+        working-directory: target/${{ inputs.target-path }}
+        shell: bash
+        run: |
+          pnpm build
