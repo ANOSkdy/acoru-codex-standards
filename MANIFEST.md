@@ -69,6 +69,9 @@
 - `schema-sync.md`: schema 同期 prompt
 - `ui-adjustment.md`: UI寄せ / 微調整 prompt
 - `pre-implementation-audit.md`: 実装前の総合監査 prompt
+- `project-inventory.md`: PJ固有情報の事実抽出と inventory 初稿化 prompt
+- `product-doc-draft.md`: product docs の初稿化 prompt
+- `schema-confirmed-vs-provisional.md`: schema / status の確定度整理 prompt
 
 ## templates/bootstrap
 - `README.md`: bootstrap prompt と starter の使い分け
