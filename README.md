@@ -105,6 +105,14 @@ GitHub 上だけで foundation 検査を回すための workflow です。
 - `docs/github/BRANCH_PROTECTION_AND_RULESETS.md`
 - `docs/github/ACTIONS_POLICY.md`
 
+### PJ固有資料の初期整備（最短フロー）
+
+共通標準repoに含まれない PJ 固有情報は、`templates/prompts/` の次の3本を順に使って整備します。
+
+1. `project-inventory.md`（事実抽出）
+2. `product-doc-draft.md`（product docs 初稿化）
+3. `schema-confirmed-vs-provisional.md`（schema / enum / status の確定度整理）
+
 ---
 
 ## なぜ `pnpm-lock.yaml` を同梱していないか
